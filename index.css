@@ -1,0 +1,175 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== Cabeçalho ===== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #051937, #00224e);
+  color: #f2f6ff;
+  padding: 15px 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.logo {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: #4ecbff;
+}
+
+.topbar ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.topbar a {
+  color: #f2f6ff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.topbar a:hover {
+  color: #4ecbff;
+}
+
+.logout {
+  color: #4ecbff !important;
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.logout:hover {
+  color: #ffffff !important;
+}
+
+/* ===== Dashboard ===== */
+.dashboard {
+  background: url('https://images.unsplash.com/photo-1511316695145-4992006ffddb') center/cover no-repeat;
+  min-height: 85vh;
+  padding: 60px 10%;
+  color: white;
+  position: relative;
+}
+
+/* camada escura para legibilidade */
+.dashboard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 15, 35, 0.65);
+  z-index: 0;
+}
+
+.dashboard * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Boas-vindas ===== */
+.welcome {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.welcome h2 {
+  font-size: 2em;
+  color: #4ecbff;
+  margin-bottom: 10px;
+}
+
+.welcome p {
+  font-size: 1.1em;
+  color: #d8e8ff;
+}
+
+/* ===== Cards ===== */
+.cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  width: 280px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.card h3 {
+  color: #4ecbff;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.95em;
+  margin-bottom: 20px;
+  color: #e8f4ff;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 22px;
+  background: #4ecbff;
+  color: #00224e;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #009fe3;
+  color: white;
+}
+
+/* ===== Rodapé ===== */
+footer {
+  background: linear-gradient(90deg, #001b35, #021a38);
+  color: #b8d8ff;
+  text-align: center;
+  padding: 15px;
+  font-size: 0.9em;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Botões e listas ===== */
+li {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #002b50, #004b7a);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+li:hover {
+  background: linear-gradient(135deg, #004b7a, #008ccf);
+  transform: scale(1.03);
+}
+

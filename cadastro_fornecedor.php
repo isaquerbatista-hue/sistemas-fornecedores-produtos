@@ -7,9 +7,6 @@ include('conexao.php');
 // Função para redimensionar e salvar a imagem
 function redimensionarESalvarImagem($arquivo, $largura = 80, $altura = 80) {
     $diretorio_destino = "img/";
-    if (!file_exists($diretorio_destino)) {
-        mkdir($diretorio_destino, 0777, true);
-    }
     $nome_arquivo = uniqid() . '_' . basename($arquivo["name"]);
     $caminho_completo = $diretorio_destino . $nome_arquivo;
     $tipo_arquivo = strtolower(pathinfo($caminho_completo, PATHINFO_EXTENSION));
@@ -72,11 +69,10 @@ function redimensionarESalvarImagem($arquivo, $largura = 80, $altura = 80) {
 
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = $_POST['id'] ?? '';
-    $fornecedor_id = $_POST['fornecedor_id'];
+    $id = $_POST['id'];
     $nome = $_POST['nome'];
-    $descricao = $_POST['descricao'];
-    $preco = str_replace(',', '.', $_POST['preco']); // Converte vírgula para ponto
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'];
 
     // Processa o upload da imagem
     $imagem = "";
@@ -92,151 +88,126 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Prepara a query SQL para inserção ou atualização
     if ($id) {
         // Se o ID existe, é uma atualização
-        $sql = "UPDATE produtos SET fornecedor_id=?, nome=?, descricao=?, preco=?";
-        $params = [$fornecedor_id, $nome, $descricao, $preco];
+        $sql = "UPDATE fornecedores SET nome='$nome', email='$email', telefone='$telefone'";
         if($imagem) {
-            $sql .= ", imagem=?";
-            $params[] = $imagem;
+            $sql .= ", imagem='$imagem'";
         }
-        $sql .= " WHERE id=?";
-        $params[] = $id;
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param(str_repeat('s', count($params)), ...$params);
-        $mensagem = "Produto atualizado com sucesso!";
+        $sql .= " WHERE id='$id'";
+        $mensagem = "Fornecedor atualizado com sucesso!";
     } else {
         // Se não há ID, é uma nova inserção
-        $sql = "INSERT INTO produtos (fornecedor_id, nome, descricao, preco, imagem) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("issss", $fornecedor_id, $nome, $descricao, $preco, $imagem);
-        $mensagem = "Produto cadastrado com sucesso!";
+        $sql = "INSERT INTO fornecedores (nome, email, telefone, imagem) VALUES ('$nome', '$email', '$telefone', '$imagem')";
+        $mensagem = "Fornecedor cadastrado com sucesso!";
     }
 
     // Executa a query e verifica se houve erro
-    if ($stmt->execute()) {
-        $class = "success";
-    } else {
-        $mensagem = "Erro: " . $stmt->error;
-        $class = "error";
+    if ($conn->query($sql) !== TRUE) {
+        $mensagem = "Erro: " . $conn->error;
     }
 }
 
-// Verifica se foi solicitada a exclusão de um produto
+// Verifica se foi solicitada a exclusão de um fornecedor
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
-    $sql = "DELETE FROM produtos WHERE id=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $delete_id);
-    if ($stmt->execute()) {
-        $mensagem = "Produto excluído com sucesso!";
-        $class = "success";
+    
+    // Verifica se o fornecedor tem produtos cadastrados
+    $check_produtos = $conn->query("SELECT COUNT(*) as count FROM produtos WHERE fornecedor_id = '$delete_id'")->fetch_assoc();
+    
+    if ($check_produtos['count'] > 0) {
+        $mensagem = "Não é possível excluir este fornecedor pois existem produtos cadastrados para ele.";
     } else {
-        $mensagem = "Erro ao excluir produto: " . $stmt->error;
-        $class = "error";
+        $sql = "DELETE FROM fornecedores WHERE id='$delete_id'";
+        if ($conn->query($sql) === TRUE) {
+            $mensagem = "Fornecedor excluído com sucesso!";
+        } else {
+            $mensagem = "Erro ao excluir fornecedor: " . $conn->error;
+        }
     }
 }
 
-// Busca todos os produtos para listar na tabela
-$produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f.nome AS fornecedor_nome FROM produtos p JOIN fornecedores f ON p.fornecedor_id = f.id");
+// Busca todos os fornecedores para listar na tabela
+$fornecedores = $conn->query("SELECT * FROM fornecedores");
 
-// Se foi solicitada a edição de um produto, busca os dados dele
-$produto = null;
+// Se foi solicitada a edição de um fornecedor, busca os dados dele
+$fornecedor = null;
 if (isset($_GET['edit_id'])) {
     $edit_id = $_GET['edit_id'];
-    $stmt = $conn->prepare("SELECT * FROM produtos WHERE id=?");
-    $stmt->bind_param("i", $edit_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $produto = $result->fetch_assoc();
-    $stmt->close();
+    $fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fetch_assoc();
 }
-
-// Busca todos os fornecedores para o select do formulário
-$fornecedores = $conn->query("SELECT id, nome FROM fornecedores");
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Produto</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Cadastro de Patrocinadores</title>
+    <link rel="stylesheet" href="fornecedor.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Cadastro de Produto</h2>
-        <!-- Formulário para cadastro/edição de produto -->
+    <div class="container" style="width: 900px;">
+        <h2>Cadastro de Patrocinadores</h2>
+        <!-- Formulário para cadastro/edição de fornecedor -->
         <form method="post" action="" enctype="multipart/form-data">
-            <input type="hidden" name="id" value="<?php echo $produto['id'] ?? ''; ?>">
-            
-            <label for="fornecedor_id">Fornecedor:</label>
-            <select name="fornecedor_id" required>
-                <?php while ($row = $fornecedores->fetch_assoc()): ?>
-                    <option value="<?php echo $row['id']; ?>" <?php if ($produto && $produto['fornecedor_id'] == $row['id']) echo 'selected'; ?>><?php echo $row['nome']; ?></option>
-                <?php endwhile; ?>
-            </select>
+            <input type="hidden" name="id" value="<?php echo $fornecedor['id'] ?? ''; ?>">
             
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" value="<?php echo $produto['nome'] ?? ''; ?>" required>
+            <input type="text" name="nome" value="<?php echo $fornecedor['nome'] ?? ''; ?>" required>
             
-            <label for="descricao">Descrição:</label>
-            <textarea name="descricao"><?php echo $produto['descricao'] ?? ''; ?></textarea>
+            <label for="email">Email:</label>
+            <input type="email" name="email" value="<?php echo $fornecedor['email'] ?? ''; ?>">
             
-            <label for="preco">Preço:</label>
-            <input type="text" name="preco" value="<?php echo $produto['preco'] ?? ''; ?>" required>
+            <label for="telefone">Telefone:</label>
+            <input type="text" name="telefone" value="<?php echo $fornecedor['telefone'] ?? ''; ?>">
             
             <label for="imagem">Imagem:</label>
             <input type="file" name="imagem" accept="image/*">
-            <?php if (isset($produto['imagem']) && $produto['imagem']): ?>
-                <img src="<?php echo $produto['imagem']; ?>" alt="Imagem atual do produto" class="update-image">
+            <?php if (isset($fornecedor['imagem']) && $fornecedor['imagem']): ?>
+                <img src="<?php echo $fornecedor['imagem']; ?>" alt="Imagem atual do fornecedor" class="update-image">
             <?php endif; ?>
             <br>
-            <button type="submit"><?php echo $produto ? 'Atualizar' : 'Cadastrar'; ?></button>
+            <button type="submit"><?php echo $fornecedor ? 'Atualizar' : 'Cadastrar'; ?></button>
         </form>
         
         <!-- Exibe mensagens de sucesso ou erro -->
-        <?php if (isset($mensagem)): ?>
-            <p class="message <?php echo $class; ?>"><?php echo $mensagem; ?></p>
-        <?php endif; ?>
+        <?php
+        if (isset($mensagem)) echo "<p class='message " . (strpos($mensagem, 'Erro') !== false ? "error" : "success") . "'>$mensagem</p>";
+        if (isset($mensagem_erro)) echo "<p class='message error'>$mensagem_erro</p>";
+        ?>
 
-        <h2>Listagem de Produtos</h2>
-        <!-- Tabela para listar os produtos cadastrados -->
+        <h2>Listagem de Patrocinadores</h2>
+        <!-- Tabela para listar os fornecedores cadastrados -->
         <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Preço</th>
-                    <th>Fornecedor</th>
-                    <th>Imagem</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $produtos->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo $row['id']; ?></td>
-                    <td><?php echo $row['nome']; ?></td>
-                    <td><?php echo $row['descricao']; ?></td>
-                    <td><?php echo 'R$ ' . number_format($row['preco'], 2, ',', '.'); ?></td>
-                    <td><?php echo $row['fornecedor_nome']; ?></td>
-                    <td>
-                        <?php if ($row['imagem']): ?>
-                            <img src="<?php echo $row['imagem']; ?>" alt="Imagem do produto" class="thumbnail">
-                        <?php else: ?>
-                            Sem imagem
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <a href="?edit_id=<?php echo $row['id']; ?>">Editar</a>
-                        <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-            </tbody>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Imagem</th>
+                <th>Ações</th>
+            </tr>
+            <?php while ($row = $fornecedores->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo $row['id']; ?></td>
+                <td><?php echo $row['nome']; ?></td>
+                <td><?php echo $row['email']; ?></td>
+                <td><?php echo $row['telefone']; ?></td>
+                <td>
+                    <?php if ($row['imagem']): ?>
+                        <img src="<?php echo $row['imagem']; ?>" alt="Imagem do fornecedor" class="thumbnail">
+                    <?php else: ?>
+                        Sem imagem
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <a href="?edit_id=<?php echo $row['id']; ?>">Editar</a>
+                    <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
+                </td>
+            </tr>
+            <?php endwhile; ?>
         </table>
-        <a href="index.php" class="back-button">Voltar</a>
+        <div class="actions">
+          <a href="index.php" class="back-button">Voltar</a>
+        </div>
     </div>
 </body>
 </html>

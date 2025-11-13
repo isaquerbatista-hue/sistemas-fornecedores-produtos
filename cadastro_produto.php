@@ -159,12 +159,12 @@ $fornecedores = $conn->query("SELECT id, nome FROM fornecedores");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Produto</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Cadastro de Pacotes</title>
+    <link rel="stylesheet" href="produtos.css">
 </head>
 <body>
     <div class="container">
-        <h2>Cadastro de Produto</h2>
+        <h2>Cadastro de Pacotes</h2>
         <!-- Formulário para cadastro/edição de produto -->
         <form method="post" action="" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo $produto['id'] ?? ''; ?>">
@@ -199,7 +199,7 @@ $fornecedores = $conn->query("SELECT id, nome FROM fornecedores");
             <p class="message <?php echo $class; ?>"><?php echo $mensagem; ?></p>
         <?php endif; ?>
 
-        <h2>Listagem de Produtos</h2>
+        <h2>Listagem de Pacotes</h2>
         <!-- Tabela para listar os produtos cadastrados -->
         <table>
             <thead>

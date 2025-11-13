@@ -1,0 +1,118 @@
+/* Fundo e estilo geral */
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+   background: linear-gradient(90deg, #123e8a, #fff);
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    backdrop-filter: brightness(0.9);
+}
+
+/* Container central */
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 50px auto;
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Título */
+h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #00bfff;
+    text-shadow: 0 0 10px rgba(0, 191, 255, 0.6);
+}
+
+/* Mensagens */
+.message {
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.message.success {
+    background-color: rgba(46, 204, 113, 0.9);
+    color: white;
+}
+
+.message.error {
+    background-color: rgba(231, 76, 60, 0.9);
+    color: white;
+}
+
+/* Tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+th {
+    background-color: rgba(0, 191, 255, 0.2);
+    color: #00bfff;
+    text-transform: uppercase;
+}
+
+td {
+    color: #eee;
+}
+
+/* Imagens da tabela */
+td img {
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Links de ação */
+a {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.3s;
+    color: white;
+}
+
+a[href*="edit_id"] {
+    background-color: #2980b9;
+}
+
+a[href*="delete_id"] {
+    background-color: #c0392b;
+}
+
+a:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+/* Botão Voltar */
+.back-button {
+    display: inline-block;
+    background-color: #16a085;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #1abc9c;
+    transform: scale(1.05);
+}

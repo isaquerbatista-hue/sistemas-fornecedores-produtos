@@ -19,8 +19,8 @@ $produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Listagem de Produtos</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Listagem de Pacotes</title>
+    <link rel="stylesheet" href="listagem.css">
 </head>
 <body>
     <div class="container">
