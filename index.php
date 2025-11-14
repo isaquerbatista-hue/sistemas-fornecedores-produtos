@@ -27,19 +27,19 @@
             <div class="card">
                 <h3>🛳️ Cadastrar Pacotes</h3>
                 <p>Adicione novos produtos ao sistema de forma rápida e segura.</p>
-                <a href="cadastro_produto.php" class="btn">Acessar</a>
+                <a href="cadastro_pacotes.php" class="btn">Acessar</a>
             </div>
 
             <div class="card">
                 <h3>🏢 Cadastrar Patrocinadores</h3>
                 <p>Gerencie informações de fornecedores e mantenha tudo atualizado.</p>
-                <a href="cadastro_fornecedor.php" class="btn">Acessar</a>
+                <a href="cadastro_patrocinador.php" class="btn">Acessar</a>
             </div>
 
             <div class="card">
                 <h3>📋 Listar Pacotes</h3>
                 <p>Visualize e edite o catálogo completo de produtos disponíveis.</p>
-                <a href="listagem_produtos.php" class="btn">Ver Lista</a>
+                <a href="listagem_pacotes.php" class="btn">Ver Lista</a>
             </div>
         </div>
     </main>

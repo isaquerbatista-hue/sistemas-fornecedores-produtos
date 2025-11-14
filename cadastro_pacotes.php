@@ -73,7 +73,7 @@ function redimensionarESalvarImagem($arquivo, $largura = 80, $altura = 80) {
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_POST['id'] ?? '';
-    $fornecedor_id = $_POST['fornecedor_id'];
+    $patrocinador_id = $_POST['patrocinador_id'];
     $nome = $_POST['nome'];
     $descricao = $_POST['descricao'];
     $preco = str_replace(',', '.', $_POST['preco']); // Converte vírgula para ponto
@@ -92,8 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Prepara a query SQL para inserção ou atualização
     if ($id) {
         // Se o ID existe, é uma atualização
-        $sql = "UPDATE produtos SET fornecedor_id=?, nome=?, descricao=?, preco=?";
-        $params = [$fornecedor_id, $nome, $descricao, $preco];
+        $sql = "UPDATE pacotes SET patrocinador_id=?, nome=?, descricao=?, preco=?";
+        $params = [$patrocinador_id, $nome, $descricao, $preco];
         if($imagem) {
             $sql .= ", imagem=?";
             $params[] = $imagem;
@@ -102,13 +102,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $params[] = $id;
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(str_repeat('s', count($params)), ...$params);
-        $mensagem = "Produto atualizado com sucesso!";
+        $mensagem = "Pacote atualizado com sucesso!";
     } else {
         // Se não há ID, é uma nova inserção
-        $sql = "INSERT INTO produtos (fornecedor_id, nome, descricao, preco, imagem) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO pacotes (patrocinador_id, nome, descricao, preco, imagem) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("issss", $fornecedor_id, $nome, $descricao, $preco, $imagem);
-        $mensagem = "Produto cadastrado com sucesso!";
+        $stmt->bind_param("issss", $patrocinador_id, $nome, $descricao, $preco, $imagem);
+        $mensagem = "Pacote cadastrado com sucesso!";
     }
 
     // Executa a query e verifica se houve erro
@@ -123,26 +123,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Verifica se foi solicitada a exclusão de um produto
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
-    $sql = "DELETE FROM produtos WHERE id=?";
+    $sql = "DELETE FROM pacotes WHERE id=?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $delete_id);
     if ($stmt->execute()) {
-        $mensagem = "Produto excluído com sucesso!";
+        $mensagem = "Pacote excluído com sucesso!";
         $class = "success";
     } else {
-        $mensagem = "Erro ao excluir produto: " . $stmt->error;
+        $mensagem = "Erro ao excluir pacote: " . $stmt->error;
         $class = "error";
     }
 }
 
 // Busca todos os produtos para listar na tabela
-$produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f.nome AS fornecedor_nome FROM produtos p JOIN fornecedores f ON p.fornecedor_id = f.id");
+$produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f.nome AS patrocinador_nome FROM pacotes p JOIN patrocinadores f ON p.patrocinador_id = f.id");
 
 // Se foi solicitada a edição de um produto, busca os dados dele
 $produto = null;
 if (isset($_GET['edit_id'])) {
     $edit_id = $_GET['edit_id'];
-    $stmt = $conn->prepare("SELECT * FROM produtos WHERE id=?");
+    $stmt = $conn->prepare("SELECT * FROM pacotes WHERE id=?");
     $stmt->bind_param("i", $edit_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -151,7 +151,7 @@ if (isset($_GET['edit_id'])) {
 }
 
 // Busca todos os fornecedores para o select do formulário
-$fornecedores = $conn->query("SELECT id, nome FROM fornecedores");
+$patrocinadores = $conn->query("SELECT id, nome FROM patrocinadores");
 ?>
 
 <!DOCTYPE html>
@@ -160,38 +160,38 @@ $fornecedores = $conn->query("SELECT id, nome FROM fornecedores");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Pacotes</title>
-    <link rel="stylesheet" href="produtos.css">
+    <link rel="stylesheet" href="pacotes.css">
 </head>
 <body>
     <div class="container">
-        <h2>Cadastro de Pacotes</h2>
+        <h2>Cadastro de Pacote</h2>
         <!-- Formulário para cadastro/edição de produto -->
         <form method="post" action="" enctype="multipart/form-data">
-            <input type="hidden" name="id" value="<?php echo $produto['id'] ?? ''; ?>">
+            <input type="hidden" name="id" value="<?php echo $pacote['id'] ?? ''; ?>">
             
-            <label for="fornecedor_id">Fornecedor:</label>
-            <select name="fornecedor_id" required>
-                <?php while ($row = $fornecedores->fetch_assoc()): ?>
-                    <option value="<?php echo $row['id']; ?>" <?php if ($produto && $produto['fornecedor_id'] == $row['id']) echo 'selected'; ?>><?php echo $row['nome']; ?></option>
+            <label for="patrocinador_id">Patrocinador:</label>
+            <select name="patrocinador_id" required>
+                <?php while ($row = $patrocinadores->fetch_assoc()): ?>
+                    <option value="<?php echo $row['id']; ?>" <?php if ($pacote && $pacote['patrocinador_id'] == $row['id']) echo 'selected'; ?>><?php echo $row['nome']; ?></option>
                 <?php endwhile; ?>
             </select>
             
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" value="<?php echo $produto['nome'] ?? ''; ?>" required>
+            <input type="text" name="nome" value="<?php echo $pacote['nome'] ?? ''; ?>" required>
             
             <label for="descricao">Descrição:</label>
-            <textarea name="descricao"><?php echo $produto['descricao'] ?? ''; ?></textarea>
+            <textarea name="descricao"><?php echo $pacote['descricao'] ?? ''; ?></textarea>
             
             <label for="preco">Preço:</label>
-            <input type="text" name="preco" value="<?php echo $produto['preco'] ?? ''; ?>" required>
+            <input type="text" name="preco" value="<?php echo $pacote['preco'] ?? ''; ?>" required>
             
             <label for="imagem">Imagem:</label>
             <input type="file" name="imagem" accept="image/*">
-            <?php if (isset($produto['imagem']) && $produto['imagem']): ?>
-                <img src="<?php echo $produto['imagem']; ?>" alt="Imagem atual do produto" class="update-image">
+            <?php if (isset($pacote['imagem']) && $pacote['imagem']): ?>
+                <img src="<?php echo $pacote['imagem']; ?>" alt="Imagem atual do pacote" class="update-image">
             <?php endif; ?>
             <br>
-            <button type="submit"><?php echo $produto ? 'Atualizar' : 'Cadastrar'; ?></button>
+            <button type="submit"><?php echo $pacote ? 'Atualizar' : 'Cadastrar'; ?></button>
         </form>
         
         <!-- Exibe mensagens de sucesso ou erro -->
@@ -208,22 +208,22 @@ $fornecedores = $conn->query("SELECT id, nome FROM fornecedores");
                     <th>Nome</th>
                     <th>Descrição</th>
                     <th>Preço</th>
-                    <th>Fornecedor</th>
+                    <th>Patrocinador</th>
                     <th>Imagem</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                <?php while ($row = $produtos->fetch_assoc()): ?>
+                <?php while ($row = $pacotes->fetch_assoc()): ?>
                 <tr>
                     <td><?php echo $row['id']; ?></td>
                     <td><?php echo $row['nome']; ?></td>
                     <td><?php echo $row['descricao']; ?></td>
                     <td><?php echo 'R$ ' . number_format($row['preco'], 2, ',', '.'); ?></td>
-                    <td><?php echo $row['fornecedor_nome']; ?></td>
+                    <td><?php echo $row['patrocinador_nome']; ?></td>
                     <td>
                         <?php if ($row['imagem']): ?>
-                            <img src="<?php echo $row['imagem']; ?>" alt="Imagem do produto" class="thumbnail">
+                            <img src="<?php echo $row['imagem']; ?>" alt="Imagem do pacote" class="thumbnail">
                         <?php else: ?>
                             Sem imagem
                         <?php endif; ?>

@@ -88,16 +88,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Prepara a query SQL para inserção ou atualização
     if ($id) {
         // Se o ID existe, é uma atualização
-        $sql = "UPDATE fornecedores SET nome='$nome', email='$email', telefone='$telefone'";
+        $sql = "UPDATE patrocinadores SET nome='$nome', email='$email', telefone='$telefone'";
         if($imagem) {
             $sql .= ", imagem='$imagem'";
         }
         $sql .= " WHERE id='$id'";
-        $mensagem = "Fornecedor atualizado com sucesso!";
+        $mensagem = "Patrocinador atualizado com sucesso!";
     } else {
         // Se não há ID, é uma nova inserção
-        $sql = "INSERT INTO fornecedores (nome, email, telefone, imagem) VALUES ('$nome', '$email', '$telefone', '$imagem')";
-        $mensagem = "Fornecedor cadastrado com sucesso!";
+        $sql = "INSERT INTO patrocinadores (nome, email, telefone, imagem) VALUES ('$nome', '$email', '$telefone', '$imagem')";
+        $mensagem = "Patrocinador inserido com sucesso!";
     }
 
     // Executa a query e verifica se houve erro
@@ -111,28 +111,28 @@ if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
     
     // Verifica se o fornecedor tem produtos cadastrados
-    $check_produtos = $conn->query("SELECT COUNT(*) as count FROM produtos WHERE fornecedor_id = '$delete_id'")->fetch_assoc();
+    $check_pacotes = $conn->query("SELECT COUNT(*) as count FROM pacotes WHERE patrocinador_id = '$delete_id'")->fetch_assoc();
     
-    if ($check_produtos['count'] > 0) {
-        $mensagem = "Não é possível excluir este fornecedor pois existem produtos cadastrados para ele.";
+    if ($check_pacotes['count'] > 0) {
+        $mensagem = "Não é possível excluir este patrocinador pois existem pacotes cadastrados para ele.";
     } else {
-        $sql = "DELETE FROM fornecedores WHERE id='$delete_id'";
+        $sql = "DELETE FROM patrocinadores WHERE id='$delete_id'";
         if ($conn->query($sql) === TRUE) {
-            $mensagem = "Fornecedor excluído com sucesso!";
+            $mensagem = "Patrocinador excluído com sucesso!";
         } else {
-            $mensagem = "Erro ao excluir fornecedor: " . $conn->error;
+            $mensagem = "Erro ao excluir patrocinador: " . $conn->error;
         }
     }
 }
 
 // Busca todos os fornecedores para listar na tabela
-$fornecedores = $conn->query("SELECT * FROM fornecedores");
+$fornecedores = $conn->query("SELECT * FROM patrocinadores");
 
 // Se foi solicitada a edição de um fornecedor, busca os dados dele
-$fornecedor = null;
+$patrocinador = null;
 if (isset($_GET['edit_id'])) {
     $edit_id = $_GET['edit_id'];
-    $fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fetch_assoc();
+    $patrocinador = $conn->query("SELECT * FROM patrocinadores WHERE id='$edit_id'")->fetch_assoc();
 }
 ?>
 
@@ -141,31 +141,31 @@ if (isset($_GET['edit_id'])) {
 <head>
     <meta charset="UTF-8">
     <title>Cadastro de Patrocinadores</title>
-    <link rel="stylesheet" href="fornecedor.css">
+    <link rel="stylesheet" href="patrocinadores.css">
 </head>
 <body>
     <div class="container" style="width: 900px;">
-        <h2>Cadastro de Patrocinadores</h2>
+        <h2>Cadastro de Patrocinador</h2>
         <!-- Formulário para cadastro/edição de fornecedor -->
         <form method="post" action="" enctype="multipart/form-data">
-            <input type="hidden" name="id" value="<?php echo $fornecedor['id'] ?? ''; ?>">
+            <input type="hidden" name="id" value="<?php echo $patrocinador['id'] ?? ''; ?>">
             
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" value="<?php echo $fornecedor['nome'] ?? ''; ?>" required>
+            <input type="text" name="nome" value="<?php echo $patrocinador['nome'] ?? ''; ?>" required>
             
             <label for="email">Email:</label>
-            <input type="email" name="email" value="<?php echo $fornecedor['email'] ?? ''; ?>">
+            <input type="email" name="email" value="<?php echo $patrocinador['email'] ?? ''; ?>">
             
             <label for="telefone">Telefone:</label>
-            <input type="text" name="telefone" value="<?php echo $fornecedor['telefone'] ?? ''; ?>">
+            <input type="text" name="telefone" value="<?php echo $patrocinador['telefone'] ?? ''; ?>">
             
             <label for="imagem">Imagem:</label>
             <input type="file" name="imagem" accept="image/*">
-            <?php if (isset($fornecedor['imagem']) && $fornecedor['imagem']): ?>
-                <img src="<?php echo $fornecedor['imagem']; ?>" alt="Imagem atual do fornecedor" class="update-image">
+            <?php if (isset($patrocinador['imagem']) && $patrocinador['imagem']): ?>
+                <img src="<?php echo $patrocinador['imagem']; ?>" alt="Imagem atual do patrocinador" class="update-image">
             <?php endif; ?>
             <br>
-            <button type="submit"><?php echo $fornecedor ? 'Atualizar' : 'Cadastrar'; ?></button>
+            <button type="submit"><?php echo $patrocinador ? 'Atualizar' : 'Cadastrar'; ?></button>
         </form>
         
         <!-- Exibe mensagens de sucesso ou erro -->
@@ -185,7 +185,7 @@ if (isset($_GET['edit_id'])) {
                 <th>Imagem</th>
                 <th>Ações</th>
             </tr>
-            <?php while ($row = $fornecedores->fetch_assoc()): ?>
+            <?php while ($row = $patrocinadores->fetch_assoc()): ?>
             <tr>
                 <td><?php echo $row['id']; ?></td>
                 <td><?php echo $row['nome']; ?></td>
@@ -193,7 +193,7 @@ if (isset($_GET['edit_id'])) {
                 <td><?php echo $row['telefone']; ?></td>
                 <td>
                     <?php if ($row['imagem']): ?>
-                        <img src="<?php echo $row['imagem']; ?>" alt="Imagem do fornecedor" class="thumbnail">
+                        <img src="<?php echo $row['imagem']; ?>" alt="Imagem do patrocinador" class="thumbnail">
                     <?php else: ?>
                         Sem imagem
                     <?php endif; ?>

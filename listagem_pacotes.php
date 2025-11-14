@@ -12,7 +12,7 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-$produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f.nome AS fornecedor_nome FROM produtos p JOIN fornecedores f ON p.fornecedor_id = f.id");
+$produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f.nome AS patrocinador_nome FROM pacotes p JOIN patrocinadores f ON p.patrocinador_id = f.id");
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +24,7 @@ $produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f
 </head>
 <body>
     <div class="container">
-        <h2>Listagem de Produtos</h2>
+        <h2>Listagem de Pacotes</h2>
         <?php if (isset($mensagem)) echo "<p class='message " . ($conn->error ? "error" : "success") . "'>$mensagem</p>"; ?>
         <table>
             <tr>
@@ -32,26 +32,26 @@ $produtos = $conn->query("SELECT p.id, p.nome, p.descricao, p.preco, p.imagem, f
                 <th>Nome</th>
                 <th>Descrição</th>
                 <th>Preço</th>
-                <th>Fornecedor</th>
+                <th>Patrocinador</th>
                 <th>Imagem</th>
                 <th>Ações</th>
             </tr>
-            <?php while ($row = $produtos->fetch_assoc()): ?>
+            <?php while ($row = $pacotes->fetch_assoc()): ?>
             <tr>
                 <td><?php echo $row['id']; ?></td>
                 <td><?php echo $row['nome']; ?></td>
                 <td><?php echo $row['descricao']; ?></td>
                 <td><?php echo $row['preco']; ?></td>
-                <td><?php echo $row['fornecedor_nome']; ?></td>
+                <td><?php echo $row['patrocinador_nome']; ?></td>
                 <td>
                     <?php if ($row['imagem']): ?>
-                        <img src="<?php echo $row['imagem']; ?>" alt="Imagem do produto" style="max-width: 100px;">
+                        <img src="<?php echo $row['imagem']; ?>" alt="Imagem do pacote" style="max-width: 100px;">
                     <?php else: ?>
                         Sem imagem
                     <?php endif; ?>
                 </td>
                 <td>
-                    <a href="cadastro_produto.php?edit_id=<?php echo $row['id']; ?>">Editar</a>
+                    <a href="cadastro_pacote.php?edit_id=<?php echo $row['id']; ?>">Editar</a>
                     <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
                 </td>
             </tr>
